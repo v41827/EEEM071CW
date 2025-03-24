@@ -11,6 +11,8 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
+import wandb
+
 from args import argument_parser, dataset_kwargs, optimizer_kwargs, lr_scheduler_kwargs
 from src import models
 from src.data_manager import ImageDataManager
@@ -36,20 +38,26 @@ import uuid
 parser = argument_parser()
 args = parser.parse_args()
 
+wandb.init(
+    project="eeem071-veri",
+    name=f"{args.arch}-{time.strftime('%Y%m%d-%H%M%S')}",
+    config=vars(args)
+)
+
 def main():
     global args
 
     set_random_seed(args.seed)
     if torch.backends.mps.is_available():
         device = torch.device("mps")
-        print("\u2705 Using Apple Silicon GPU via MPS (Metal Performance Shaders)")
+        print("Using Apple Silicon GPU via MPS (Metal Performance Shaders)")
     elif torch.cuda.is_available():
         device = torch.device("cuda")
-        print(f"\u2705 Using CUDA GPU: {torch.cuda.get_device_name(device)}")
+        print(f"Using CUDA GPU: {torch.cuda.get_device_name(device)}")
         cudnn.benchmark = True
     else:
         device = torch.device("cpu")
-        print("\u26A0\uFE0F Using CPU only — GPU is not available or not selected.")
+        print("Using CPU only — GPU is not available or not selected.")
 
     log_name = "log_test.txt" if args.evaluate else "log_train.txt"
     sys.stdout = Logger(osp.join(args.save_dir, log_name))
@@ -81,6 +89,7 @@ def main():
         load_pretrained_weights(model, args.load_weights)
 
     model = model.to(device)
+    wandb.watch(model, log="all", log_freq=100)
 
     criterion_xent = CrossEntropyLoss(
         num_classes=dm.num_train_pids, label_smooth=args.label_smooth, device=device
@@ -116,6 +125,7 @@ def main():
 
     time_start = time.time()
     ranklogger = RankLogger(args.source_names, args.target_names)
+    best_rank1 = -1
     print("=> Start training")
 
     for epoch in range(args.start_epoch, args.max_epoch):
@@ -146,16 +156,12 @@ def main():
                 rank1 = test(model, queryloader, galleryloader, device)
                 ranklogger.write(name, epoch + 1, rank1)
 
-            save_checkpoint(
-                {
-                    "state_dict": model.state_dict(),
-                    "rank1": rank1,
-                    "epoch": epoch + 1,
-                    "arch": args.arch,
-                    "optimizer": optimizer.state_dict(),
-                },
-                args.save_dir,
-            )
+                if rank1 > best_rank1:
+                    best_rank1 = rank1
+                    print(f"✅ Saving new best model (Rank-1: {rank1:.2f}%)")
+                    save_path = os.path.join(wandb.run.dir, "best_model.pth")
+                    torch.save(model.state_dict(), save_path)
+                    wandb.save(save_path)
 
     elapsed = round(time.time() - time_start)
     elapsed = str(datetime.timedelta(seconds=elapsed))
@@ -203,12 +209,12 @@ def train(epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, 
 
         if (batch_idx + 1) % args.print_freq == 0:
             print(
-                "Epoch: [{0}][{1}/{2}]\t"
-                "Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t"
-                "Data {data_time.val:.4f} ({data_time.avg:.4f})\t"
-                "Xent {xent.val:.4f} ({xent.avg:.4f})\t"
-                "Htri {htri.val:.4f} ({htri.avg:.4f})\t"
-                "Acc {acc.val:.2f} ({acc.avg:.2f})\t".format(
+                "Epoch: [{0}][{1}/{2}]	"
+                "Time {batch_time.val:.3f} ({batch_time.avg:.3f})	"
+                "Data {data_time.val:.4f} ({data_time.avg:.4f})	"
+                "Xent {xent.val:.4f} ({xent.avg:.4f})	"
+                "Htri {htri.val:.4f} ({htri.avg:.4f})	"
+                "Acc {acc.val:.2f} ({acc.avg:.2f})	".format(
                     epoch + 1,
                     batch_idx + 1,
                     len(trainloader),
@@ -285,6 +291,17 @@ def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return
     if return_distmat:
         return distmat
     return cmc[0]
+# Optional: upload saved best model to W&B
+best_model_path = os.path.join(args.save_dir, "best_model.pth")
+if os.path.exists(best_model_path):
+    artifact = wandb.Artifact(name="mobilenet_v3_small-best-model", type="model")
+    artifact.add_file(best_model_path)
+    wandb.log_artifact(artifact)
+    print("✅ Uploaded best_model.pth to W&B as an artifact.")
 
 if __name__ == "__main__":
     main()
+    wandb.finish()
+
+
+
