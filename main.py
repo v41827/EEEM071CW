@@ -36,16 +36,21 @@ import uuid
 parser = argument_parser()
 args = parser.parse_args()
 
-
 def main():
     global args
 
     set_random_seed(args.seed)
-    if not args.use_avai_gpus:
-        os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_devices
-    use_gpu = torch.cuda.is_available()
-    if args.use_cpu:
-        use_gpu = False
+    if torch.backends.mps.is_available():
+        device = torch.device("mps")
+        print("\u2705 Using Apple Silicon GPU via MPS (Metal Performance Shaders)")
+    elif torch.cuda.is_available():
+        device = torch.device("cuda")
+        print(f"\u2705 Using CUDA GPU: {torch.cuda.get_device_name(device)}")
+        cudnn.benchmark = True
+    else:
+        device = torch.device("cpu")
+        print("\u26A0\uFE0F Using CPU only — GPU is not available or not selected.")
+
     log_name = "log_test.txt" if args.evaluate else "log_train.txt"
     sys.stdout = Logger(osp.join(args.save_dir, log_name))
     print("==========")
@@ -58,14 +63,8 @@ def main():
     print("==========")
     print(f"==========\nArgs:{args}\n==========")
 
-    if use_gpu:
-        print(f"Currently using GPU {args.gpu_devices}")
-        cudnn.benchmark = True
-    else:
-        warnings.warn("Currently using CPU, however, GPU is highly recommended")
-
     print("Initializing image data manager")
-    dm = ImageDataManager(use_gpu, **dataset_kwargs(args))
+    dm = ImageDataManager(True, **dataset_kwargs(args))
     trainloader, testloader_dict = dm.return_dataloaders()
 
     print(f"Initializing model: {args.arch}")
@@ -74,17 +73,17 @@ def main():
         num_classes=dm.num_train_pids,
         loss={"xent", "htri"},
         pretrained=not args.no_pretrained,
-        use_gpu=use_gpu,
+        use_gpu=True,
     )
     print("Model size: {:.3f} M".format(count_num_param(model)))
 
     if args.load_weights and check_isfile(args.load_weights):
         load_pretrained_weights(model, args.load_weights)
 
-    model = nn.DataParallel(model).cuda() if use_gpu else model
+    model = model.to(device)
 
     criterion_xent = CrossEntropyLoss(
-        num_classes=dm.num_train_pids, use_gpu=use_gpu, label_smooth=args.label_smooth
+        num_classes=dm.num_train_pids, label_smooth=args.label_smooth, device=device
     )
     criterion_htri = TripletLoss(margin=args.margin)
     optimizer = init_optimizer(model, **optimizer_kwargs(args))
@@ -103,7 +102,7 @@ def main():
             queryloader = testloader_dict[name]["query"]
             galleryloader = testloader_dict[name]["gallery"]
             distmat = test(
-                model, queryloader, galleryloader, use_gpu, return_distmat=True
+                model, queryloader, galleryloader, device, return_distmat=True
             )
 
             if args.visualize_ranks:
@@ -118,17 +117,7 @@ def main():
     time_start = time.time()
     ranklogger = RankLogger(args.source_names, args.target_names)
     print("=> Start training")
-    """
-    if args.fixbase_epoch > 0:
-        print('Train {} for {} epochs while keeping other layers frozen'.format(args.open_layers, args.fixbase_epoch))
-        initial_optim_state = optimizer.state_dict()
 
-        for epoch in range(args.fixbase_epoch):
-            train(epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, use_gpu, fixbase=True)
-
-        print('Done. All layers are open to train for {} epochs'.format(args.max_epoch))
-        optimizer.load_state_dict(initial_optim_state)
-    """
     for epoch in range(args.start_epoch, args.max_epoch):
         train(
             epoch,
@@ -137,7 +126,7 @@ def main():
             criterion_htri,
             optimizer,
             trainloader,
-            use_gpu,
+            device,
         )
 
         scheduler.step()
@@ -154,7 +143,7 @@ def main():
                 print(f"Evaluating {name} ...")
                 queryloader = testloader_dict[name]["query"]
                 galleryloader = testloader_dict[name]["gallery"]
-                rank1 = test(model, queryloader, galleryloader, use_gpu)
+                rank1 = test(model, queryloader, galleryloader, device)
                 ranklogger.write(name, epoch + 1, rank1)
 
             save_checkpoint(
@@ -173,10 +162,7 @@ def main():
     print(f"Elapsed {elapsed}")
     ranklogger.show_summary()
 
-
-def train(
-    epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, use_gpu
-):
+def train(epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, device):
     xent_losses = AverageMeter()
     htri_losses = AverageMeter()
     accs = AverageMeter()
@@ -185,14 +171,13 @@ def train(
 
     model.train()
     for p in model.parameters():
-        p.requires_grad = True  # open all layers
+        p.requires_grad = True
 
     end = time.time()
     for batch_idx, (imgs, pids, _, _) in enumerate(trainloader):
         data_time.update(time.time() - end)
 
-        if use_gpu:
-            imgs, pids = imgs.cuda(), pids.cuda()
+        imgs, pids = imgs.to(device), pids.to(device)
 
         outputs, features = model(imgs)
         if isinstance(outputs, (tuple, list)):
@@ -237,15 +222,7 @@ def train(
 
         end = time.time()
 
-
-def test(
-    model,
-    queryloader,
-    galleryloader,
-    use_gpu,
-    ranks=[1, 5, 10, 20],
-    return_distmat=False,
-):
+def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return_distmat=False):
     batch_time = AverageMeter()
 
     model.eval()
@@ -253,9 +230,7 @@ def test(
     with torch.no_grad():
         qf, q_pids, q_camids = [], [], []
         for batch_idx, (imgs, pids, camids, _) in enumerate(queryloader):
-            if use_gpu:
-                imgs = imgs.cuda()
-
+            imgs = imgs.to(device)
             end = time.time()
             features = model(imgs)
             batch_time.update(time.time() - end)
@@ -268,17 +243,11 @@ def test(
         q_pids = np.asarray(q_pids)
         q_camids = np.asarray(q_camids)
 
-        print(
-            "Extracted features for query set, obtained {}-by-{} matrix".format(
-                qf.size(0), qf.size(1)
-            )
-        )
+        print("Extracted features for query set, obtained {}-by-{} matrix".format(qf.size(0), qf.size(1)))
 
         gf, g_pids, g_camids = [], [], []
         for batch_idx, (imgs, pids, camids, _) in enumerate(galleryloader):
-            if use_gpu:
-                imgs = imgs.cuda()
-
+            imgs = imgs.to(device)
             end = time.time()
             features = model(imgs)
             batch_time.update(time.time() - end)
@@ -291,15 +260,9 @@ def test(
         g_pids = np.asarray(g_pids)
         g_camids = np.asarray(g_camids)
 
-        print(
-            "Extracted features for gallery set, obtained {}-by-{} matrix".format(
-                gf.size(0), gf.size(1)
-            )
-        )
+        print("Extracted features for gallery set, obtained {}-by-{} matrix".format(gf.size(0), gf.size(1)))
 
-    print(
-        f"=> BatchTime(s)/BatchSize(img): {batch_time.avg:.3f}/{args.test_batch_size}"
-    )
+    print(f"=> BatchTime(s)/BatchSize(img): {batch_time.avg:.3f}/{args.test_batch_size}")
 
     m, n = qf.size(0), gf.size(0)
     distmat = (
@@ -310,7 +273,6 @@ def test(
     distmat = distmat.numpy()
 
     print("Computing CMC and mAP")
-    # cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, args.target_names)
     cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids)
 
     print("Results ----------")
@@ -323,7 +285,6 @@ def test(
     if return_distmat:
         return distmat
     return cmc[0]
-
 
 if __name__ == "__main__":
     main()

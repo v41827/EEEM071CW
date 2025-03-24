@@ -1,0 +1,11 @@
+==========
+Student ID:yc01847
+Student name:Yiwen Chan
+UUID:c1f3a494-a34c-4c39-8d68-d27822e0764e
+Experiment time:2025-03-24 19:53:25
+==========
+==========
+Args:Namespace(root='/Users/yiwenchan/Desktop/Workspace/VeRi', source_names=['veri'], target_names=['veri'], workers=4, split_id=0, height=128, width=256, train_sampler='RandomSampler', random_erase=False, color_jitter=False, color_aug=False, optim='adam', lr=0.0003, weight_decay=0.0005, momentum=0.9, sgd_dampening=0, sgd_nesterov=False, rmsprop_alpha=0.99, adam_beta1=0.9, adam_beta2=0.999, max_epoch=60, start_epoch=0, train_batch_size=32, test_batch_size=100, lr_scheduler='multi_step', stepsize=[20, 40], gamma=0.1, label_smooth=False, margin=0.3, num_instances=4, lambda_xent=1, lambda_htri=1, arch='mobilenet_v3_small', no_pretrained=False, load_weights='', evaluate=False, eval_freq=-1, start_eval=0, test_size=800, query_remove=True, print_freq=10, seed=1, resume='', save_dir='log', use_cpu=False, gpu_devices='0', visualize_ranks=False, use_avai_gpus=False)
+==========
+Initializing image data manager
+=> Initializing TRAIN (source) datasets
