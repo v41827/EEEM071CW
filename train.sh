@@ -4,7 +4,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
 -a mobilenet_v3_small \
---root /Users/yiwenchan/Desktop/Workspace \
+--root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
 --optim amsgrad \
