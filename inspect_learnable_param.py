@@ -4,7 +4,7 @@ import torch
 model_path = "logs/mobilenet_v3_small-veri/best_model.pth"
 
 # Load the state dict from file
-state_dict = torch.load(model_path, map_location="cpu")
+state_dict = torch.load(model_path, map_location="cpu") # Load on CPU in case on other device
 
 print(f"✅ Loaded model from: {model_path}\n")
 print("🔍 Parameters preview:")

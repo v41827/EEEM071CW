@@ -50,7 +50,7 @@ def main():
     set_random_seed(args.seed)
     if torch.backends.mps.is_available():
         device = torch.device("mps")
-        print("Using Apple Silicon GPU via MPS (Metal Performance Shaders)")
+        print("🍎 Using Apple Silicon GPU via MPS (Metal Performance Shaders)")
     elif torch.cuda.is_available():
         device = torch.device("cuda")
         print(f"Using CUDA GPU: {torch.cuda.get_device_name(device)}")
