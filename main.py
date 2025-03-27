@@ -51,7 +51,7 @@ def main():
         print("🍎 Using Apple Silicon GPU via MPS (Metal Performance Shaders)")
     elif torch.cuda.is_available():
         device = torch.device("cuda")
-        print(f"Using CUDA GPU: {torch.cuda.get_device_name(device)}")
+        print(f"👩‍💻 Using CUDA GPU: {torch.cuda.get_device_name(device)}")
         cudnn.benchmark = True
     else:
         device = torch.device("cpu")
