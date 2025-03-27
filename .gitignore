@@ -168,3 +168,10 @@ tags
 /transformers
 
 datasets/*
+
+# Ignore all contents of wandb folder
+wandb/**
+
+# Except the folder itself and .gitkeep
+!wandb/
+!wandb/.gitkeep
