@@ -3,7 +3,7 @@
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -19,7 +19,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -36,7 +36,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -52,7 +52,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -69,7 +69,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -87,7 +87,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -104,7 +104,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
