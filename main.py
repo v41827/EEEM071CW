@@ -32,17 +32,15 @@ from src.utils.torchtools import (
     resume_from_checkpoint,
 )
 from src.utils.visualtools import visualize_ranked_results
+from src.utils.wandb_logger import WandbLogger
 import uuid
 
 # global variables
 parser = argument_parser()
 args = parser.parse_args()
 
-wandb.init(
-    project="eeem071-veri",
-    name=f"{args.arch}-{time.strftime('%Y%m%d-%H%M%S')}",
-    config=vars(args)
-)
+run_name = os.path.basename(args.save_dir.rstrip("/"))
+wandb_logger = WandbLogger(args, run_name=run_name)
 
 def main():
     global args
@@ -89,7 +87,7 @@ def main():
         load_pretrained_weights(model, args.load_weights)
 
     model = model.to(device)
-    wandb.watch(model, log="all", log_freq=100)
+    wandb_logger.watch_model(model)
 
     criterion_xent = CrossEntropyLoss(
         num_classes=dm.num_train_pids, label_smooth=args.label_smooth, device=device
@@ -153,15 +151,20 @@ def main():
                 print(f"Evaluating {name} ...")
                 queryloader = testloader_dict[name]["query"]
                 galleryloader = testloader_dict[name]["gallery"]
-                rank1 = test(model, queryloader, galleryloader, device)
+                distmat, q_pids, g_pids, q_camids, g_camids = test(
+                model, queryloader, galleryloader, device, return_distmat=True
+                )
+                cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids)
+                rank1 = cmc[0]
                 ranklogger.write(name, epoch + 1, rank1)
+                wandb_logger.log_eval_metrics(epoch + 1, cmc, mAP)
 
                 if rank1 > best_rank1:
                     best_rank1 = rank1
                     print(f"✅ Saving new best model (Rank-1: {rank1:.2f}%)")
                     save_path = os.path.join(wandb.run.dir, "best_model.pth")
                     torch.save(model.state_dict(), save_path)
-                    wandb.save(save_path)
+                    wandb_logger.save_model_artifact(save_path)
 
     elapsed = round(time.time() - time_start)
     elapsed = str(datetime.timedelta(seconds=elapsed))
@@ -227,6 +230,8 @@ def train(epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, 
             )
 
         end = time.time()
+    # Log training metrics to W&B after the epoch
+    wandb_logger.log_metrics(epoch + 1, xent_losses.avg, htri_losses.avg, loss.item(), accs.avg)
 
 def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return_distmat=False):
     batch_time = AverageMeter()
@@ -294,14 +299,9 @@ def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return
 # Optional: upload saved best model to W&B
 best_model_path = os.path.join(args.save_dir, "best_model.pth")
 if os.path.exists(best_model_path):
-    artifact = wandb.Artifact(name="mobilenet_v3_small-best-model", type="model")
-    artifact.add_file(best_model_path)
-    wandb.log_artifact(artifact)
+    wandb_logger.save_model_artifact(best_model_path, name="mobilenet_v3_small-best-model")
     print("✅ Uploaded best_model.pth to W&B as an artifact.")
 
 if __name__ == "__main__":
     main()
-    wandb.finish()
-
-
-
+    wandb_logger.finish()
