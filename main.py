@@ -231,7 +231,7 @@ def train(epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, 
 
         end = time.time()
     # Log training metrics to W&B after the epoch
-    wandb_logger.log_metrics(epoch + 1, xent_losses.avg, htri_losses.avg, loss.item(), accs.avg)
+    wandb_logger.log_metrics(xent_losses.avg, htri_losses.avg, loss.item(), accs.avg)
 
 def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return_distmat=False):
     batch_time = AverageMeter()
