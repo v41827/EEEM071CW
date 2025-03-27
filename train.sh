@@ -3,7 +3,7 @@
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a mobilenet_v3_small \
+-a resnet18 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -13,4 +13,4 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/mobilenet_v3_small-veri-veri_ot1 \
+--save-dir logs/resnet18_ot1 \
