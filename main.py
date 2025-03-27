@@ -294,7 +294,7 @@ def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return
     print("------------------")
 
     if return_distmat:
-        return distmat
+        return distmat, q_pids, g_pids, q_camids, g_camids
     return cmc[0]
 # Optional: upload saved best model to W&B
 best_model_path = os.path.join(args.save_dir, "best_model.pth")
