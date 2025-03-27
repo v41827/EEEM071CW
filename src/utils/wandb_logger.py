@@ -20,7 +20,7 @@ class WandbLogger:
         Logs training metrics to wandb.
         """
         self.run.log({
-            "epoch": epoch,
+            "epoch": epoch,   #optional for the coursework
             "loss/xent": xent_loss,
             "loss/htri": htri_loss,
             "loss/total": total_loss,
