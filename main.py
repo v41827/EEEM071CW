@@ -300,7 +300,7 @@ def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return
 best_model_path = os.path.join(args.save_dir, "best_model.pth")
 if os.path.exists(best_model_path):
     wandb_logger.save_model_artifact(best_model_path, name="mobilenet_v3_small-best-model")
-    print("✅ Uploaded best_model.pth to W&B as an artifact.")
+    print("📊 Uploaded best_model.pth to W&B as an artifact.")
 
 if __name__ == "__main__":
     main()
