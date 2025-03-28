@@ -3,7 +3,7 @@
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet18_fc512 \
+-a resnet50 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -13,13 +13,13 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/resnet18_fc512 \
+--save-dir logs/resnet50 \
 
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet34 \
+-a resnet50_fc512 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -29,12 +29,12 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/resnet34 \
+--save-dir logs/resnet50_fc512 \
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet34_fc512 \
+-a mobilenet_v3_small \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -44,13 +44,13 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/resnet34_fc512 \
+--save-dir logs/mobilenet_v3_small \
 
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet34_fc512 \
+-a vgg16 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -60,4 +60,4 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/resnet34_fc512 \
+--save-dir logs/vgg16 \
