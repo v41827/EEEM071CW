@@ -13,13 +13,13 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/resnet50 \
-
+--random-erase \
+--save-dir logs/resnet50_random-erase \
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a resnet50_fc512 \
+-a resnet50 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -29,12 +29,14 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/resnet50_fc512 \
+--random-erase \
+--color-jitter \
+--save-dir logs/resnet50_random-erase_color-jitter \
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a mobilenet_v3_small \
+-a resnet50 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -44,13 +46,13 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/mobilenet_v3_small \
-
+--color-aug \
+--save-dir logs/resnet50_color_aug \
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 -s veri \
 -t veri \
--a vgg16 \
+-a resnet50 \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
@@ -60,4 +62,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---save-dir logs/vgg16 \
+--color-jitter \
+--color-aug \
+--save-dir logs/resnet50_color-jitter_color-aug \
+
