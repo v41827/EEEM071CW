@@ -13,9 +13,8 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---random-erase \
 --color-aug \
---save-dir logs/resnet50_random-erase_color-aug \
+--save-dir logs/resnet50_color-aug \
 
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
@@ -32,7 +31,8 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --train-batch-size 64 \
 --test-batch-size 100 \
 --color-jitter \
---save-dir logs/resnet50_color-jitter \
+--color-aug \
+--save-dir logs/resnet50_color-jitter_color-aug \
 
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
@@ -48,8 +48,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --stepsize 20 40 \
 --train-batch-size 64 \
 --test-batch-size 100 \
---color-jitter \
 --random-erase \
---color-aug \
---save-dir logs/resnet50_color-jitter_random-erase_color-aug \
+--color-jitter \
+--save-dir logs/resnet50_random-erase_color-jitter \
 
