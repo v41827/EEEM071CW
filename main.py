@@ -147,6 +147,8 @@ def main():
         ):
             print("=> Test")
 
+            current_lr = optimizer.param_groups[0]['lr']
+
             for name in args.target_names:
                 print(f"Evaluating {name} ...")
                 queryloader = testloader_dict[name]["query"]
@@ -157,7 +159,7 @@ def main():
                 cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids)
                 rank1 = cmc[0]
                 ranklogger.write(name, epoch + 1, rank1)
-                wandb_logger.log_eval_metrics(epoch + 1, cmc, mAP)
+                wandb_logger.log_eval_metrics(epoch + 1, cmc, mAP, current_lr) 
 
                 if rank1 > best_rank1:
                     best_rank1 = rank1

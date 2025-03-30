@@ -28,7 +28,7 @@ class WandbLogger:
             "learning_rate": lr #optional for the coursework
         }, step=epoch)
 
-    def log_eval_metrics(self, epoch: int, cmc, mAP: float):
+    def log_eval_metrics(self, epoch: int, cmc, mAP: float, lr: float):
         """
         Logs evaluation metrics (CMC ranks and mAP) to wandb.
         """
@@ -36,7 +36,8 @@ class WandbLogger:
             "rank-1": cmc[0],
             "rank-5": cmc[4],
             "rank-10": cmc[9],
-            "mAP": mAP
+            "mAP": mAP,
+            "learning_rate": lr #optional for the coursework
         }, step=epoch)
 
     def watch_model(self, model: nn.Module):
