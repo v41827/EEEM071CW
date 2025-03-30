@@ -8,12 +8,12 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --height 224 \
 --width 224 \
 --optim amsgrad \
---lr 0.0006 \
+--lr 0.0001 \
 --max-epoch 10 \
 --stepsize 20 40 \
---train-batch-size 64 \
+--train-batch-size 32 \
 --test-batch-size 100 \
---save-dir logs/resnet50_6e-4 \
+--save-dir logs/resnet50_1e-4_32 \
 
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
@@ -24,12 +24,12 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --height 224 \
 --width 224 \
 --optim amsgrad \
---lr 0.0009 \
+--lr 0.0001 \
 --max-epoch 10 \
 --stepsize 20 40 \
---train-batch-size 64 \
+--train-batch-size 128 \
 --test-batch-size 100 \
---save-dir logs/resnet50_9e-4\
+--save-dir logs/resnet50_1e-4_128 \
 
 
 STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
@@ -40,10 +40,24 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --height 224 \
 --width 224 \
 --optim amsgrad \
---lr 0.00005 \
+--lr 0.0001 \
 --max-epoch 10 \
 --stepsize 20 40 \
---train-batch-size 64 \
+--train-batch-size 96 \
 --test-batch-size 100 \
---save-dir logs/resnet50_5e-5\
+--save-dir logs/resnet50_1e-4_96 \
 
+STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
+-s veri \
+-t veri \
+-a resnet50 \
+--root /user/HS400/yc01847/Desktop \
+--height 224 \
+--width 224 \
+--optim amsgrad \
+--lr 0.0001 \
+--max-epoch 10 \
+--stepsize 20 40 \
+--train-batch-size 192 \
+--test-batch-size 100 \
+--save-dir logs/resnet50_1e-4_192 \
