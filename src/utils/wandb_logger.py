@@ -15,7 +15,7 @@ class WandbLogger:
 
         self.save_dir = args.save_dir
 
-    def log_metrics(self, epoch: int, xent_loss: float, htri_loss: float, total_loss: float, acc: float):
+    def log_metrics(self, epoch: int, xent_loss: float, htri_loss: float, total_loss: float, acc: float, lr: float):
         """
         Logs training metrics to wandb.
         """
@@ -24,7 +24,7 @@ class WandbLogger:
             "loss/xent": xent_loss,
             "loss/htri": htri_loss,
             "loss/total": total_loss,
-            "train/accuracy": acc  #optional for the coursework
+            "train/accuracy": acc,  #optional for the coursework
             "learning_rate": lr #optional for the coursework
         }, step=epoch)
 
