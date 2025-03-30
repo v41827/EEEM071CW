@@ -25,6 +25,7 @@ class WandbLogger:
             "loss/htri": htri_loss,
             "loss/total": total_loss,
             "train/accuracy": acc  #optional for the coursework
+            "learning_rate": lr #optional for the coursework
         }, step=epoch)
 
     def log_eval_metrics(self, epoch: int, cmc, mAP: float):

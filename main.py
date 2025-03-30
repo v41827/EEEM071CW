@@ -230,8 +230,11 @@ def train(epoch, model, criterion_xent, criterion_htri, optimizer, trainloader, 
             )
 
         end = time.time()
+    current_lr = optimizer.param_groups[0]['lr'] #get the current learning rate
+    #print(f'Epoch: {epoch + 1}, Current learning rate: {current_lr}')
+
     # Log training metrics to W&B after the epoch
-    wandb_logger.log_metrics(epoch +1, xent_losses.avg, htri_losses.avg, loss.item(), accs.avg)
+    wandb_logger.log_metrics(epoch +1, xent_losses.avg, htri_losses.avg, loss.item(), accs.avg, current_lr)
 
 def test(model, queryloader, galleryloader, device, ranks=[1, 5, 10, 20], return_distmat=False):
     batch_time = AverageMeter()
