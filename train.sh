@@ -7,7 +7,7 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --root /user/HS400/yc01847/Desktop \
 --height 224 \
 --width 224 \
---optim amsgrad \
+--optim sgd \
 --lr 0.0001 \
 --max-epoch 10 \
 --stepsize 20 40 \
