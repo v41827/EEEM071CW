@@ -11,6 +11,6 @@ STUDENT_ID=yc01847 STUDENT_NAME="Yiwen Chan" python main.py \
 --lr 0.0001 \
 --max-epoch 10 \
 --stepsize 20 40 \
---train-batch-size 192 \
+--train-batch-size 32 \
 --test-batch-size 100 \
---save-dir logs/resnet50_1e-4_192 \
+--save-dir logs/resnet50_1e-4_32_sgd \
